@@ -5,7 +5,7 @@ import logo from '../../../assets/slice1.png'
 import useStyles from './styles'
 
 
-const NavBar = () => {
+const NavBar = ( { totalItems }) => {
 
     const classes = useStyles();
     return (
@@ -13,13 +13,13 @@ const NavBar = () => {
         <AppBar position="fixed" className={classes.appBar} color="inherit">
             <Toolbar>
                 <Typography variant="h6" className={classes.title} color="inherit">
-                    <img src={logo} alt="Desire Bag" height ="40px" className={classes.img} />
+                    <img src={logo} alt="Desire Bag" height ="48px" className={classes.img} />
                     Desire Bag
                 </Typography>
                 <div className={classes.grow}></div>
                 <div className={classes.button}>
                     <IconButton aria-label="Show cart items" color="inherit">
-                        <Badge badgeContent={2} color="secondary">
+                        <Badge badgeContent={totalItems} color="secondary">
                             <ShoppingCart />
                         </Badge>
                     </IconButton>
