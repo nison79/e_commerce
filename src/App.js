@@ -5,6 +5,7 @@ import { BrowserRouter as Router , Switch, Route } from 'react-router-dom'
 import Products from './components/Products/Products'
 import NavBar from './components/Products/NavBar/NavBar'
 import Cart from './components/Products/Cart/Cart'
+import Checkout from './components/Products/CheckoutForm/Checkout/Checkout'
 import { commerce } from './lib/commerce'
 import './App.css';
 
@@ -70,6 +71,9 @@ console.log(cart);
               handleRemoveFromCart={handleRemoveFromCart}
               handleUpdateCartQty ={handleUpdateCartQty}
               />
+            </Route>
+            <Route exact path="/checkout">
+              <Checkout />
             </Route>
           
         
