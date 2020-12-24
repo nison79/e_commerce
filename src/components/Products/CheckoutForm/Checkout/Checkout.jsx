@@ -1,8 +1,9 @@
 import React , { useState , useEffect} from 'react'
-import { Paper , Stepper , Step , Typography , StepLabel, CircularProgress, Divider , Button } from '@material-ui/core'
+import { Paper , Stepper , Step , Typography , StepLabel, CircularProgress, Divider , Button, CssBaseline } from '@material-ui/core'
 import { commerce } from '../../../../lib/commerce.js'
 import AddressForm from './AddressForm'
 import PaymentForm from './PaymentForm'
+import { Link , useHistory } from 'react-router-dom'
 
 import useStyles from './styles'
 
@@ -11,8 +12,10 @@ const steps = ['Shipping Address' ,'Payment details' ]
 const Checkout = ( { cart , order , onCaptureCheckout , error }) => {
     const [activeStep , setActiveStep] = useState(0);
     const [checkoutToken ,setCheckoutToken] = useState('')
-    const [shippingData , setShippingData] = useState({})
+    const [shippingData , setShippingData] = useState({});
+    const [isFinished , setIsFinished ] = useState(false)
     const classes = useStyles();
+    const history = useHistory();
 
     useEffect(() => {
         const generateToken = async () => {
@@ -22,8 +25,8 @@ const Checkout = ( { cart , order , onCaptureCheckout , error }) => {
 
                 setCheckoutToken(token);
 
-            } catch (error) {
-
+            } catch ( error ) {
+                    history.pushState('/');
             }
         }
 
@@ -39,17 +42,63 @@ const Checkout = ( { cart , order , onCaptureCheckout , error }) => {
         nextStep();
     }
 
+    const timeout = () => {
+        setTimeout(() => {
+            setIsFinished(true)
+        } ,  3000)
+    }
 
-    const Confirmation = () => (
-        <div>Confirmation</div>
-    )
+
+    let Confirmation = () => order.customer ? (
+        <>
+            <div>
+                <Typography variant = "h5" >Thank you for the purchase , {order.customer.firstname} {order.customer.lastname}</Typography>
+                <Divider className={classes.divider} /> 
+                <Typography variant="subtitle2">Order Ref : {order.customer_reference}</Typography>
+                <br/>
+                <Button component={Link} to="/" variant = "outlined" type="button">Back to Home</Button>
+            </div>
+ 
+        </>
+    ) : isFinished ? (
+        <>
+            <div>
+                <Typography variant = "h5" >Thank you for the purchase</Typography>
+                <Divider className={classes.divider} /> 
+                <br/>
+                <Button component={Link} to="/" variant = "outlined" type="button">Back to Home</Button>
+            </div>
+
+        </>
+    ) : (
+        <div className={classes.spinner}>
+            <CircularProgress />
+        </div>
+    );
+
+    if(error) {
+        <>
+            <Typography variant = "h5">Error: {error}</Typography>
+            <br/>
+            <Button component={Link} to="/" variant = "outlined" type="button">Back to Home</Button>
+        </>
+    }
 
     const Form = () => activeStep === 0
-    ? <AddressForm checkoutToken={checkoutToken} next={next}/>
-    : <PaymentForm shippingData={shippingData} checkoutToken={checkoutToken} backStep={backStep} nextStep={nextStep} onCaptureCheckout={onCaptureCheckout}/>
+    ? <AddressForm 
+    checkoutToken={checkoutToken} 
+    next={next}/>
+    : <PaymentForm 
+            shippingData={shippingData} 
+            checkoutToken={checkoutToken} 
+            backStep={backStep} 
+            nextStep={nextStep} 
+            onCaptureCheckout={onCaptureCheckout} 
+            timeout={timeout}/>
 
     return (
         <>
+            <CssBaseline />
             <div className={classes.toolbar}></div>
             <main className={classes.layout}>
                 <Paper className={classes.paper}>
